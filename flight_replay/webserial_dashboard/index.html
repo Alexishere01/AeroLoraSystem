@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AeroLoRa Telemetry Dashboard</title>
+    <link rel="stylesheet" href="dashboard_styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🚁 AeroLoRa Telemetry Dashboard</h1>
+            <div class="connection-status" id="connectionStatus">
+                <span class="status-indicator"></span>
+                <span>Disconnected</span>
+            </div>
+        </header>
+
+        <!-- System-Wide Metrics Banner -->
+        <section class="system-metrics">
+            <div class="metric-card large">
+                <div class="metric-label">Overall Throughput</div>
+                <div class="metric-value" id="totalThroughput">0.0 <span class="unit">Kbps</span></div>
+            </div>
+            <div class="metric-card large">
+                <div class="metric-label">System Delivery Rate</div>
+                <div class="metric-value" id="deliveryRate">
+                    <span id="deliveryPercent">--</span><span class="unit">%</span>
+                </div>
+                <div class="metric-bar">
+                    <div class="metric-bar-fill" id="deliveryBar" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="metric-card large">
+                <div class="metric-label">Total Dropped</div>
+                <div class="metric-value" id="totalDropped">0</div>
+                <div class="metric-sublabel" id="dropBreakdown">Queue: 0 | Stale: 0</div>
+            </div>
+            <div class="metric-card large mode-indicator">
+                <div class="metric-label">Communication Mode</div>
+                <div class="metric-value mode-value" id="commMode">DIRECT</div>
+            </div>
+        </section>
+
+        <!-- Per-Node Metrics Grid -->
+        <section class="node-metrics">
+            <!-- Drone Card -->
+            <div class="node-card">
+                <div class="node-header">
+                    <h3>🎯 DRONE (TARGET)</h3>
+                    <div class="node-status ok" id="droneStatus"></div>
+                </div>
+                <div class="node-body">
+                    <div class="metric-row">
+                        <span class="label">Packets TX:</span>
+                        <span class="value" id="droneTx">0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="label">Packets RX:</span>
+                        <span class="value" id="droneRx">0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="label">Queue Depth:</span>
+                        <span class="value"><span id="droneQueue">0</span> / 30</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="label">Drops:</span>
+                        <span class="value warning" id="droneDrops">0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="label">Signal:</span>
+                        <span class="value">
+                            <span class="signal-bars" id="droneSignalBars"></span>
+                            <span id="droneRssi">-- dBm</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ground 902 MHz Card -->
+            <div class="node-card">
+                <div class="node-header">
+                    <h3>📡 GROUND 902 MHz</h3>
+                    <div class="node-status ok" id="ground902Status"></div>
+                    <div class="jamming-indicator" id="jamming902"></div>
+                </div>
+                <div class="node-body">
+                    <div class="metric-row">
+                        <span class="label">Packets RX:</span>
+                        <span class="value" id="ground902Rx">0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="label">Signal Quality:</span>
+                        <span class="value">
+                            <span class="signal-bars" id="ground902SignalBars"></span>
+                        </span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="label">RSSI:</span>
+                        <span class="value" id="ground902Rssi">-- dBm</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="label">SNR:</span>
+                        <span class="value" id="ground902Snr">-- dB</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="label">Packet Loss:</span>
+                        <span class="value" id="ground902Loss">--%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ground 930 MHz Card -->
+            <div class="node-card">
+                <div class="node-header">
+                    <h3>📡 GROUND 930 MHz</h3>
+                    <div class="node-status ok" id="ground930Status"></div>
+                    <div class="jamming-indicator" id="jamming930"></div>
+                </div>
+                <div class="node-body">
+                    <div class="metric-row">
+                        <span class="label">Packets RX:</span>
+                        <span class="value" id="ground930Rx">0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="label">Signal Quality:</span>
+                        <span class="value">
+                            <span class="signal-bars" id="ground930SignalBars"></span>
+                        </span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="label">RSSI:</span>
+                        <span class="value" id="ground930Rssi">-- dBm</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="label">SNR:</span>
+                        <span class="value" id="ground930Snr">-- dB</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="label">Packet Loss:</span>
+                        <span class="value" id="ground930Loss">--%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Relay Card -->
+            <div class="node-card">
+                <div class="node-header">
+                    <h3>🔄 RELAY DRONE</h3>
+                    <div class="node-status inactive" id="relayStatus"></div>
+                </div>
+                <div class="node-body">
+                    <div class="metric-row">
+                        <span class="label">Forwarded:</span>
+                        <span class="value" id="relayForwarded">0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="label">Link Quality:</span>
+                        <span class="value" id="relayQuality">Inactive</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="label">Queue Depth:</span>
+                        <span class="value"><span id="relayQueue">0</span> / 30</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="label">Drops:</span>
+                        <span class="value" id="relayDrops">0</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="charts-section">
+            <div class="chart-container">
+                <h3>📊 Signal Quality Over Time</h3>
+                <canvas id="signalChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>📈 Throughput Over Time</h3>
+                <canvas id="throughputChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>✅ Delivery Rate Over Time</h3>
+                <canvas id="deliveryChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>📦 Queue Depth Over Time</h3>
+                <canvas id="queueChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Network Topology -->
+        <section class="topology-section">
+            <h3>🌐 Network Topology</h3>
+            <svg id="topologySvg" viewBox="0 0 600 400">
+                <!-- Drone -->
+                <g id="droneNode">
+                    <circle cx="300" cy="50" r="30" class="node-circle" />
+                    <text x="300" y="55" text-anchor="middle" class="node-label">DRONE</text>
+                </g>
+                
+                <!-- Relay -->
+                <g id="relayNode">
+                    <circle cx="450" cy="200" r="30" class="node-circle inactive" />
+                    <text x="450" y="205" text-anchor="middle" class="node-label">RELAY</text>
+                </g>
+                
+                <!-- Ground -->
+                <g id="groundNode">
+                    <circle cx="150" cy="350" r="30" class="node-circle" />
+                    <text x="150" y="355" text-anchor="middle" class="node-label">GROUND</text>
+                    <text x="150" y="375" text-anchor="middle" class="freq-label">902 / 930</text>
+                </g>
+                
+                <!-- Links -->
+                <line id="directLink" x1="300" y1="80" x2="150" y2="320" class="link-line active" />
+                <line id="relayLink1" x1="300" y1="80" x2="450" y2="170" class="link-line inactive" />
+                <line id="relayLink2" x1="450" y1="230" x2="150" y2="320" class="link-line inactive" />
+            </svg>
+        </section>
+
+        <!-- Event Log -->
+        <section class="event-log">
+            <h3>📋 Event Log</h3>
+            <div class="log-container" id="eventLog">
+                <div class="log-entry info">System initialized. Waiting for data...</div>
+            </div>
+        </section>
+
+        <!-- Control Panel -->
+        <section class="control-panel">
+            <div class="control-group">
+                <h4>Data Source</h4>
+                <button id="connectSerialBtn" class="btn btn-primary">🔌 Connect Serial</button>
+                <span class="separator">or</span>
+                <label for="csvUpload" class="btn btn-secondary">📁 Upload CSV Files</label>
+                <input type="file" id="csvUpload" accept=".csv" multiple style="display: none;">
+                <div id="uploadedFiles" class="file-list"></div>
+            </div>
+            
+            <div class="control-group">
+                <h4>Playback Controls</h4>
+                <button id="playBtn" class="btn btn-success" disabled>▶️ Play</button>
+                <button id="pauseBtn" class="btn btn-warning" disabled>⏸ Pause</button>
+                <button id="resetBtn" class="btn btn-danger" disabled>⏹ Reset</button>
+                <select id="speedSelect" class="speed-select" disabled>
+                    <option value="0.5">0.5x</option>
+                    <option value="1" selected>1x</option>
+                    <option value="2">2x</option>
+                    <option value="5">5x</option>
+                    <option value="10">10x</option>
+                </select>
+            </div>
+            
+            <div class="control-group full-width">
+                <h4>Timeline</h4>
+                <div class="timeline-container">
+                    <span id="currentTime">0.0s</span>
+                    <input type="range" id="timeSlider" class="time-slider" min="0" max="1000" value="0" disabled>
+                    <span id="totalTime">0.0s</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="webserial_app.js"></script>
+</body>
+</html>
