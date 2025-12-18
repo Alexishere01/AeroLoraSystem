@@ -1,4 +1,4 @@
-# AeroLoRa Relay System
+# AeroLoRa System
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PlatformIO](https://img.shields.io/badge/PlatformIO-ESP32-orange.svg)](https://platformio.org/)
@@ -43,8 +43,8 @@ A robust, long-range drone telemetry system using LoRa radio with anti-jamming r
 
 ```bash
 # Clone the repository
-git clone git@github.com:Alexishere01/AeroLoRa-Relay-System.git
-cd AeroLoRa-Relay-System
+git clone git@github.com:Alexishere01/AeroLoraSystem.git
+cd AeroLoraSystem
 
 # Flash ground station
 pio run -e aero_ground -t upload
@@ -57,7 +57,7 @@ Connect the ground station to QGroundControl via USB at 57600 baud.
 
 ## 📚 Documentation
 
-Full documentation is available at: **[GitHub Pages](https://alexishere01.github.io/AeroLoRa-Relay-System/)**
+Full documentation is available at: **[GitHub Pages](https://alexishere01.github.io/AeroLoraSystem/)**
 
 - [Prerequisites](docs/getting-started/prerequisites.md)
 - [Quick Start Guide](docs/getting-started/quick-start.md)
@@ -121,4 +121,4 @@ This project was developed as a Senior Design project. Special thanks to:
 
 ---
 
-**[📖 Read the Full Documentation](https://alexishere01.github.io/AeroLoRa-Relay-System/)**
+**[📖 Read the Full Documentation](https://alexishere01.github.io/AeroLoraSystem/)**

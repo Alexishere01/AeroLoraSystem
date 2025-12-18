@@ -10,8 +10,8 @@ Get the AeroLoRa system running in 10 minutes with this step-by-step guide.
 ## Step 1: Clone the Repository
 
 ```bash
-git clone git@github.com:Alexishere01/AeroLoRa-Relay-System.git
-cd AeroLoRa-Relay-System
+git clone git@github.com:Alexishere01/AeroLoraSystem.git
+cd AeroLoraSystem
 ```
 
 ## Step 2: Open in VS Code with PlatformIO
